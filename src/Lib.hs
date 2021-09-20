@@ -22,6 +22,15 @@ instance Eq QuadTree where
 
 -- TODO(Show)
 
+createMatrix :: Data -> Int -> QuadTree
+createMatrix = Unique
+
+zeros :: Int -> QuadTree
+zeros = createMatrix 0
+
+ones :: Int -> QuadTree
+ones = createMatrix 1
+
 size :: QuadTree -> Int
 size (Quad q _ _ _) = 2 * (size q)
 size (Unique _ int) = int
