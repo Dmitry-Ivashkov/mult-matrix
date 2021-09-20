@@ -24,6 +24,8 @@ dependencies:
 
 library:
   source-dirs: src
+  dependencies:
+    - text-printer >=0.5 && <0.6
 
 executables:
   mult-matrix-exe:

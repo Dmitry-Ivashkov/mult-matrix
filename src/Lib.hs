@@ -3,6 +3,9 @@ module Lib
     ) where
 
 import GHC.Base
+import GHC.Show
+import Text.Printer
+import Data.Foldable
 
 someFunc :: IO ()
 someFunc = putStrLn "someFunc"
@@ -11,7 +14,7 @@ type Data = Int
 
 --q1 q2
 --q4 q3
-data QuadTree = Quad QuadTree QuadTree QuadTree QuadTree | Unique Data Int deriving(Show)
+data QuadTree = Quad QuadTree QuadTree QuadTree QuadTree | Unique Data Int
 
 instance Eq QuadTree where
   (Unique d1 s1) == (Unique d2 s2) = (s1 == s2) && (d1 == d2)
@@ -20,7 +23,14 @@ instance Eq QuadTree where
     u = Unique d2 (divInt s 2)
   q1 == q2 = q2 == q1
 
--- TODO(Show)
+instance Show QuadTree where
+  show q = buildString $ fold $ map (<> newLine) (helper q) where
+    helper :: QuadTree -> [StringBuilder]
+    helper (Unique d s) = replicate s $ Prelude.foldr (<+>) (head array) (tail array) where
+      array = replicate s $ string $ show d
+    helper (Quad q1 q2 q3 q4) = (helperConcat q1 q2) ++ (helperConcat q4 q3) where
+      helperConcat :: QuadTree -> QuadTree -> [StringBuilder]
+      helperConcat q1 q2 = map (\(a,b) -> a <+> b) $ zip (helper q1) (helper q2)
 
 createMatrix :: Data -> Int -> QuadTree
 createMatrix = Unique
