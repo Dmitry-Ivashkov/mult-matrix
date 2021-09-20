@@ -47,4 +47,5 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - mult-matrix
+      - hspec >= 2.5
+      - mult-matrix
