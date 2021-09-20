@@ -1,5 +1,13 @@
 module Lib
-    ( someFunc
+    (
+    QuadTree,
+    createSimpleMatrix,
+    concatMatrix,
+    zeros,
+    ones,
+    size,
+    (***),
+    (+++)
     ) where
 
 import GHC.Base
@@ -7,8 +15,6 @@ import GHC.Show
 import Text.Printer
 import Data.Foldable
 
-someFunc :: IO ()
-someFunc = putStrLn "someFunc"
 
 type Data = Int
 
@@ -32,14 +38,17 @@ instance Show QuadTree where
       helperConcat :: QuadTree -> QuadTree -> [StringBuilder]
       helperConcat q1 q2 = map (\(a,b) -> a <+> b) $ zip (helper q1) (helper q2)
 
-createMatrix :: Data -> Int -> QuadTree
-createMatrix = Unique
+createSimpleMatrix :: Data -> Int -> QuadTree
+createSimpleMatrix = Unique
+
+concatMatrix :: QuadTree -> QuadTree -> QuadTree -> QuadTree -> QuadTree
+concatMatrix = Quad
 
 zeros :: Int -> QuadTree
-zeros = createMatrix 0
+zeros = createSimpleMatrix 0
 
 ones :: Int -> QuadTree
-ones = createMatrix 1
+ones = createSimpleMatrix 1
 
 size :: QuadTree -> Int
 size (Quad q _ _ _) = 2 * (size q)
