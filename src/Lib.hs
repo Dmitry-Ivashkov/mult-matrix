@@ -73,3 +73,16 @@ infixl 6  +++
   u = Unique d2 (divInt s 2)
 q1@(Unique _ _) +++ q2 = q2 +++ q1
 (Quad q1_1 q1_2 q1_3 q1_4) +++ (Quad q2_1 q2_2 q2_3 q2_4) = (Quad (q1_1 +++ q2_1) (q1_2 +++ q2_2) (q1_3 +++ q2_3) (q1_4 +++ q2_4))
+
+
+
+
+
+-- multidimensional implementation
+
+-- Dim >= 2
+type Dim = Int
+type Size = Int
+
+-- size [MultidimensionalMatrix] == 2^Dim
+data MultidimensionalMatrix a = MQuad [MultidimensionalMatrix] | MUnique Dim Size a
