@@ -85,4 +85,18 @@ type Dim = Int
 type Size = Int
 
 -- size [MultidimensionalMatrix] == 2^Dim
-data MultidimensionalMatrix a = MQuad [MultidimensionalMatrix] | MUnique Dim Size a
+data MultidimensionalMatrix a = MQuad [MultidimensionalMatrix a] | MUnique Dim Size a
+
+dim :: MultidimensionalMatrix a -> Dim
+dim (MUnique d _ _) = d
+dim (MQuad arr) = floor $ logBase 2 $ fromIntegral $ length arr
+
+mSize :: MultidimensionalMatrix a -> Size
+mSize (MQuad arr) = 2 * (mSize $ head arr)
+mSize (MUnique _ s _) = s
+
+add :: (a -> b -> c) -> MultidimensionalMatrix a -> MultidimensionalMatrix b -> MultidimensionalMatrix c
+add addElement (MUnique d1 s1 a) (MUnique d2 s2 b) = (MUnique d1 s1 $ addElement a b)
+add addElement (MQuad arrA) (MUnique d s b) = MQuad $ map (\mA-> add addElement mA (MUnique d (divInt s 2) b)) arrA
+add addElement m1@(MUnique _ _ _) m2 = add (flip addElement) m2 m1
+add addElement (MQuad arrA) (MQuad arrB) = MQuad $ zipWith (add addElement) arrA arrB
