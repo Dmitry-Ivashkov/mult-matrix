@@ -100,3 +100,33 @@ add addElement (MUnique d1 s1 a) (MUnique d2 s2 b) = (MUnique d1 s1 $ addElement
 add addElement (MQuad arrA) (MUnique d s b) = MQuad $ map (\mA-> add addElement mA (MUnique d (divInt s 2) b)) arrA
 add addElement m1@(MUnique _ _ _) m2 = add (flip addElement) m2 m1
 add addElement (MQuad arrA) (MQuad arrB) = MQuad $ zipWith (add addElement) arrA arrB
+
+-- index: from binary array to number
+index :: [Int] -> Int
+index = indexBase 2
+
+indexBase :: Int -> [Int] -> Int
+indexBase base arr = foldr (\a total -> a + base * total) 0 arr
+
+-- arr = fromIndex len n
+-- n == index arr
+fromIndex :: Int -> Int -> [Int]
+fromIndex = fromIndexBase 2
+
+fromIndexBase :: Int -> Int -> Int -> [Int]
+fromIndexBase base 0 n = []
+fromIndexBase base len n = (mod m base) : (fromIndexBase base (len-1) (divInt n base))
+
+-- how multiply matrix 2^dim and 2^dim
+-- (Int, Int) - what index multiply
+-- [(Int, Int)] - what index adding and multiply, length [(Int, Int)] == 2 == base
+-- [[(Int, Int)]] - for all index in [MultidimensionalMatrix a], length [[(Int, Int)]] == 2^Dim
+generateMultiplyArray :: Int -> Int -> Int -> [[(Int, Int)]]
+generateMultiplyArray dim a b = generateMultiplyArrayBase 2
+
+generateMultiplyArrayBase :: Int -> Int -> Int -> Int -> [[(Int, Int)]]
+generateMultiplyArrayBase base dim a b = undefined
+  where dim2 = 2^dim
+
+multiply :: (a -> b -> c) -> (c -> c -> d) -> Int -> Int -> MultidimensionalMatrix a -> MultidimensionalMatrix b -> MultidimensionalMatrix d
+multiply multiplyElement addElement firstIndex secondIndex m1 m2 = undefined
