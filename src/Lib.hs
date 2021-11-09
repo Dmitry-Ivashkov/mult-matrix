@@ -8,12 +8,14 @@ module Lib
     size,
     (***),
     (+++)
+    ,generateMultiplyArray
     ) where
 
 import GHC.Base
 import GHC.Show
 import Text.Printer
 import Data.Foldable
+import Data.List.Index
 
 
 type Data = Int
@@ -106,7 +108,7 @@ index :: [Int] -> Int
 index = indexBase 2
 
 indexBase :: Int -> [Int] -> Int
-indexBase base arr = foldr (\a total -> a + base * total) 0 arr
+indexBase base arr = Prelude.foldr (\a total -> a + base * total) 0 arr
 
 -- arr = fromIndex len n
 -- n == index arr
@@ -115,18 +117,23 @@ fromIndex = fromIndexBase 2
 
 fromIndexBase :: Int -> Int -> Int -> [Int]
 fromIndexBase base 0 n = []
-fromIndexBase base len n = (mod m base) : (fromIndexBase base (len-1) (divInt n base))
+fromIndexBase base len n = (mod n base) : (fromIndexBase base (len-1) (divInt n base))
+
+allIndex :: Int -> Int -> [[Int]]
+allIndex base dim = map (fromIndexBase base dim) [0..(base^dim-1)]
 
 -- how multiply matrix 2^dim and 2^dim
 -- (Int, Int) - what index multiply
 -- [(Int, Int)] - what index adding and multiply, length [(Int, Int)] == 2 == base
 -- [[(Int, Int)]] - for all index in [MultidimensionalMatrix a], length [[(Int, Int)]] == 2^Dim
+-- a a a
+-- a a a
+-- a a a dim = 2, base =3
 generateMultiplyArray :: Int -> Int -> Int -> [[(Int, Int)]]
-generateMultiplyArray dim a b = generateMultiplyArrayBase 2
+generateMultiplyArray = generateMultiplyArrayBase 2
 
 generateMultiplyArrayBase :: Int -> Int -> Int -> Int -> [[(Int, Int)]]
-generateMultiplyArrayBase base dim a b = undefined
-  where dim2 = 2^dim
+generateMultiplyArrayBase base dim a b = [[(index $ setAt (a-1) i totalIndex, index $ setAt (b-1) i totalIndex) | i <- [0..(base-1)]] | totalIndex <- allIndex base dim]
 
 multiply :: (a -> b -> c) -> (c -> c -> d) -> Int -> Int -> MultidimensionalMatrix a -> MultidimensionalMatrix b -> MultidimensionalMatrix d
 multiply multiplyElement addElement firstIndex secondIndex m1 m2 = undefined
