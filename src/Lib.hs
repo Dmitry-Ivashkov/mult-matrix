@@ -163,3 +163,10 @@ multiply multiplyElement addElement firstIndex secondIndex (MQuad arr1) (MQuad a
 multiply multiplyElement addElement firstIndex secondIndex (MQuad arr) (MUnique d s a) = MQuad [sumNotEmptyList (add addElement) (replicate 2 $ multiply multiplyElement addElement firstIndex secondIndex mi (MUnique d (divInt s 2) a) ) | mi <- arr]
 multiply multiplyElement addElement firstIndex secondIndex m1@(MUnique d s a) m2@(MQuad arr) = multiply (flip multiplyElement) addElement firstIndex secondIndex m2 m1
 multiply multiplyElement addElement firstIndex secondIndex (MUnique d1 s1 a)  (MUnique d2 s2 b) = MUnique d1 s1 $ sumNotEmptyList addElement $ replicate s1 $ multiplyElement a b
+
+instance Eq a => Eq (MultidimensionalMatrix a) where
+  (MUnique d1 s1 a1) == (MUnique d2 s2 a2) = (s1 == s2) && (d1 == d2) && (a1 == a2)
+  (MQuad arr1) == (MQuad arr2) = and $ zipWith (==) arr1 arr2
+  (MQuad arr) == (MUnique d2 s a) = and $ map (==u) arr where
+    u = MUnique d2 (divInt s 2) a
+  m1 == m2 = m2 == m1
