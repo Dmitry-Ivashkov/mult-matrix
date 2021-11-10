@@ -7,8 +7,10 @@ module Lib
     ones,
     size,
     (***),
-    (+++)
-    ,generateMultiplyArray
+    MultidimensionalMatrix,
+    (+++),
+    add,
+    multiply
     ) where
 
 import GHC.Base
@@ -87,7 +89,7 @@ type Dim = Int
 type Size = Int
 
 -- size [MultidimensionalMatrix] == 2^Dim
-data MultidimensionalMatrix a = MQuad [MultidimensionalMatrix a] | MUnique Dim Size a
+data MultidimensionalMatrix a = MQuad [MultidimensionalMatrix a] | MUnique Dim Size a deriving Show
 
 dim :: MultidimensionalMatrix a -> Dim
 dim (MUnique d _ _) = d
@@ -122,6 +124,9 @@ fromIndexBase base len n = (mod n base) : (fromIndexBase base (len-1) (divInt n 
 allIndex :: Int -> Int -> [[Int]]
 allIndex base dim = map (fromIndexBase base dim) [0..(base^dim-1)]
 
+sumNotEmptyList :: (a -> a -> a) -> [a] -> a
+sumNotEmptyList add (h:tail) = Prelude.foldr add h tail
+
 -- how multiply matrix 2^dim and 2^dim
 -- (Int, Int) - what index multiply
 -- [(Int, Int)] - what index adding and multiply, length [(Int, Int)] == 2 == base
@@ -135,5 +140,9 @@ generateMultiplyArray = generateMultiplyArrayBase 2
 generateMultiplyArrayBase :: Int -> Int -> Int -> Int -> [[(Int, Int)]]
 generateMultiplyArrayBase base dim a b = [[(index $ setAt (a-1) i totalIndex, index $ setAt (b-1) i totalIndex) | i <- [0..(base-1)]] | totalIndex <- allIndex base dim]
 
-multiply :: (a -> b -> c) -> (c -> c -> d) -> Int -> Int -> MultidimensionalMatrix a -> MultidimensionalMatrix b -> MultidimensionalMatrix d
-multiply multiplyElement addElement firstIndex secondIndex m1 m2 = undefined
+-- in future: replace 2 to base
+multiply :: (a -> b -> c) -> (c -> c -> c) -> Int -> Int -> MultidimensionalMatrix a -> MultidimensionalMatrix b -> MultidimensionalMatrix c
+multiply multiplyElement addElement firstIndex secondIndex (MQuad arr1) (MQuad arr2) = MQuad [sumNotEmptyList (add addElement) [multiply multiplyElement addElement firstIndex secondIndex (arr1 !! indexMult1) (arr2 !! indexMult2) | (indexMult1, indexMult2) <- indexSum] | indexSum <- generateMultiplyArray (dim (MQuad arr1)) firstIndex secondIndex]
+multiply multiplyElement addElement firstIndex secondIndex (MQuad arr) (MUnique d s a) = MQuad [sumNotEmptyList (add addElement) (replicate 2 $ multiply multiplyElement addElement firstIndex secondIndex mi (MUnique d (divInt s 2) a) ) | mi <- arr]
+multiply multiplyElement addElement firstIndex secondIndex m1@(MUnique d s a) m2@(MQuad arr) = multiply (flip multiplyElement) addElement firstIndex secondIndex m2 m1
+multiply multiplyElement addElement firstIndex secondIndex (MUnique d1 s1 a)  (MUnique d2 s2 b) = MUnique d1 s1 $ sumNotEmptyList addElement $ replicate s1 $ multiplyElement a b
