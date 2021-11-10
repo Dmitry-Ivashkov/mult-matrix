@@ -7,8 +7,13 @@ module Lib
     ones,
     size,
     (***),
-    MultidimensionalMatrix,
     (+++),
+    MultidimensionalMatrix,
+    mCreateSimpleMatrix,
+    mConcatMatrix,
+    mZeros,
+    mOnes,
+    mSize,
     add,
     multiply
     ) where
@@ -90,6 +95,18 @@ type Size = Int
 
 -- size [MultidimensionalMatrix] == 2^Dim
 data MultidimensionalMatrix a = MQuad [MultidimensionalMatrix a] | MUnique Dim Size a deriving Show
+
+mCreateSimpleMatrix :: Dim -> Size -> a -> MultidimensionalMatrix a
+mCreateSimpleMatrix = MUnique
+
+mConcatMatrix :: [MultidimensionalMatrix a] -> MultidimensionalMatrix a
+mConcatMatrix = MQuad
+
+mZeros :: Dim -> Size -> MultidimensionalMatrix a
+mZeros dim size = createSimpleMatrix dim size 0
+
+mOnes :: Dim -> Size -> MultidimensionalMatrix a
+mOnes dim size = createSimpleMatrix dim size 1
 
 dim :: MultidimensionalMatrix a -> Dim
 dim (MUnique d _ _) = d
