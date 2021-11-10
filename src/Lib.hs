@@ -102,11 +102,11 @@ mCreateSimpleMatrix = MUnique
 mConcatMatrix :: [MultidimensionalMatrix a] -> MultidimensionalMatrix a
 mConcatMatrix = MQuad
 
-mZeros :: Dim -> Size -> MultidimensionalMatrix a
-mZeros dim size = createSimpleMatrix dim size 0
+mZeros :: Dim -> Size -> MultidimensionalMatrix Int
+mZeros dim size = mCreateSimpleMatrix dim size 0
 
-mOnes :: Dim -> Size -> MultidimensionalMatrix a
-mOnes dim size = createSimpleMatrix dim size 1
+mOnes :: Dim -> Size -> MultidimensionalMatrix Int
+mOnes dim size = mCreateSimpleMatrix dim size 1
 
 dim :: MultidimensionalMatrix a -> Dim
 dim (MUnique d _ _) = d
